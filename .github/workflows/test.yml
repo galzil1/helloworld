@@ -1,0 +1,27 @@
+name: "Setup JFrog CLI OIDC"
+on: workflow_dispatch
+
+permissions:
+  # This is required for requesting the OIDC token
+  id-token: write
+  # This is required for actions/checkout
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ vars.JF_URL }}
+        with:
+          oidc-provider-name: galzil1/helloworld@github
+
+      - name: Dummy upload for Job Summary
+        run: |
+          echo "dummy artifact from GitHub Actions" > dummy-123.txt
+          jf rt upload dummy-123.txt generic-local/helloworld/${{ github.run_id }}/
